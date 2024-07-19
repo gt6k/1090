@@ -1,0 +1,60 @@
+{% comment %}
+  Renders product buy-buttons.
+  Accepts:
+  - product: {Object} product object.
+  - block: {Object} passing the block information.
+  - section_id: {String} id of section to which this snippet belongs.
+
+  Usage:
+  {% render 'buy-buttons', block: block, product: product, section_id: section.id, %}
+{% endcomment %}
+<div
+  id="StickyAddToCart-{{ section_id }}"
+  class="fixed bottom-0 left-0 right-0 flex justify-center invisible p-2 bg-white border-t"
+  {{ block.shopify_attributes }}
+>
+  {%- form 'product', product, class: 'form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+    <input
+      type="hidden"
+      name="id"
+      value="{{ product.selected_or_first_available_variant.id }}"
+      {% if product.selected_or_first_available_variant.available == false or quantity_rule_soldout %}
+        disabled
+      {% endif %}
+      class="product-variant-id"
+    >
+    <button
+      type="submit"
+      class="btn"
+      {%- unless product.selected_or_first_available_variant.available -%}
+        disabled="disabled"
+      {%- endunless -%}
+      data-add-to-cart
+    >
+      {{- 'products.product.add_to_cart' | t -}}
+    </button>
+  {%- endform -%}
+</div>
+
+<style>
+  #StickyAddToCart-{{ section_id }}[data-stuck="true"] {
+    visibility: visible;
+  }
+</style>
+
+<script>
+  const stickyAddToCartObserver = new IntersectionObserver((entries) => {
+    const StickyAddToCart = document.getElementById('StickyAddToCart-{{ section_id }}');
+    if (!StickyAddToCart) return;
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) {
+        StickyAddToCart.setAttribute('data-stuck', true);
+      } else {
+        StickyAddToCart.setAttribute('data-stuck', false);
+      }
+    });
+  });
+
+  const addToCart = document.getElementById('AddToCart-{{ section_id }}');
+  if (addToCart) stickyAddToCartObserver.observe(addToCart);
+</script>

@@ -81,6 +81,9 @@
                   section_id: section.id
                 -%}
 
+              {%- when 'buy_button_sticky' -%}
+                {%- render 'buy-button-sticky', block: block, product: product, section_id: section.id -%}
+
               {%- when 'description' -%}
                 {%- if product.description != blank -%}
                   <div class="rte" {{ block.shopify_attributes }}>
@@ -182,6 +185,11 @@
           "info": "t:sections.main-product.blocks.buy_buttons.settings.show_gift_card_recipient.info"
         }
       ]
+    },
+    {
+      "type": "buy_button_sticky",
+      "name": "Buy button sticky",
+      "limit": 1
     }
   ],
   "settings": [
